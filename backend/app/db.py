@@ -26,3 +26,8 @@ AsyncSessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_com
 
 # Base class for models
 Base = declarative_base()
+
+# Dependency: get DB session
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        yield session
