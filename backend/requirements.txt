@@ -4,3 +4,8 @@ pandas
 numpy
 requests
 python-dotenv
+sqlalchemy
+asyncpg
+alembic
+psycopg2-binary
+pydantic
