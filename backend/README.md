@@ -100,3 +100,35 @@ This backend was architected with cloud-native design and DevOps best practices 
 ## 🔗 Project Board
 
 See `EquityTracker Dev Board` in GitHub Projects for ongoing task tracking.
+
+---
+
+## 🗃️ PostgreSQL + Watchlist Schema Setup
+
+I integrated **PostgreSQL** using Docker, and added a **Watchlist** table with migration tracking via **Alembic**.
+
+## ▶️ Local DB (Dockerized PostgreSQL bash)
+
+docker run --name equitytracker-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=equitytracker_db -p 5432:5432 -v equitytracker_pgdata:/var/lib/postgresql/data -d postgres:15
+
+
+## 🔌 DB Connectivity
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=equitytracker_db
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+
+## 🧱 Alembic – Migrations
+
+### Create migration (auto-detect Watchlist model)
+alembic revision --autogenerate -m "create_watchlist_table"
+
+### Apply migration to DB
+alembic upgrade head
+
+### Migrations are stored in:
+backend/alembic/versions/
+
+
