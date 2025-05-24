@@ -16,7 +16,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 from app.db_sync import Base
-from app.models import Watchlist  # import all models you want Alembic to detect
+from app.models_sync import Watchlist
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
