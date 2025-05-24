@@ -67,7 +67,7 @@ Test at: `http://localhost:8000/`
 This project auto-deploys backend to AWS EC2 using:
 
 * `.github/workflows/deploy.yml`
-* GitHub Secrets: `EC2_HOST`, `EC2_USER`, `EC2_KEY`
+* GitHub Secrets: `EC2_HOST`, `EC2_USER`, `EC2_KEY`, `FINNHUB_API_KEY`, `DATABASE_URL`
 
 Every `master` push triggers remote `git pull`, `docker build`, and `run` on EC2.
 
