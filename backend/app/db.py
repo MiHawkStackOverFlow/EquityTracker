@@ -5,10 +5,6 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
-# Load from .env
-env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
-
 # postgresql+asyncpg://postgres:postgres@localhost:5432/equitytracker_db
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
