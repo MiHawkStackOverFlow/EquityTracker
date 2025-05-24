@@ -9,14 +9,8 @@ import os
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-DB_HOST = os.environ.get("DB_HOST")
-DB_PORT = os.environ.get("DB_PORT")
-DB_NAME = os.environ.get("DB_NAME")
-DB_USER = os.environ.get("DB_USER")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-
 # postgresql+asyncpg://postgres:postgres@localhost:5432/equitytracker_db
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 # Async engine
 print("Loaded DB URL:", DATABASE_URL)
