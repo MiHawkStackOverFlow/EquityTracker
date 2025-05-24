@@ -19,6 +19,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Async engine
+print("Loaded DB URL:", DATABASE_URL)
 engine = create_async_engine(DATABASE_URL, echo=True)
 
 # Session factory
