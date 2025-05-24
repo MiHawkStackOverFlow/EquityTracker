@@ -1,12 +1,8 @@
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
-
-import os
 from sqlalchemy import create_engine
+from sqlalchemy import pool
+from alembic import context
+import os
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,7 +15,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app.db import Base
+from app.db_sync import Base
 from app.models import Watchlist  # import all models you want Alembic to detect
 target_metadata = Base.metadata
 
