@@ -31,7 +31,5 @@ jobs:
             docker stop equitytracker-container || true
             docker rm equitytracker-container || true
             docker build -t equitytracker-backend .
-            docker run -d -p 8000:8000 \
-              -e FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }} \
-              --name equitytracker-container equitytracker-backend
+            docker run -d -p 8000:8000 -e FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }} -e DATABASE_URL=${{ secrets.DATABASE_URL }} --name equitytracker-container equitytracker-backend
           EOF
