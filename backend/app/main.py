@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app import models, schemas, db
 from sqlalchemy.future import select
 from app.stock_fetcher import fetch_stock_data
 from sqlalchemy.orm import Session
+from typing import Literal
+from operator import attrgetter
 
 app = FastAPI()
 
@@ -12,18 +14,43 @@ def root():
     return {"message": "EquityTracker backend running on EC2!"}
 
 @app.get("/stock/{ticker}")
-def get_stock(ticker: str):
-    return fetch_stock_data(ticker)
+async def get_stock(ticker: str):
+    return await fetch_stock_data(ticker)
 
-@app.post("/watchlist")
-async def add_to_watchlist(watch: schemas.WatchlistCreate, db: AsyncSession = Depends(db.get_db)):
-    new_entry = models.Watchlist(symbol=watch.symbol)
-    db.add(new_entry)
-    await db.commit()
-    await db.refresh(new_entry)
-    return new_entry
+@app.post("/watchlist", response_model=schemas.WatchlistOut)
+async def upsert_watchlist(item: schemas.WatchlistCreate, db_session: AsyncSession = Depends(db.get_db)):
+    existing = (await db_session.execute(
+        select(models.Watchlist).where(models.Watchlist.symbol == item.symbol)
+    )).scalar_one_or_none()
+
+    if existing:
+        for f in ("name","market_cap","pe_ratio","price","currency","exchange"):
+            setattr(existing, f, getattr(item, f))
+        await db_session.commit()
+        await db_session.refresh(existing)
+        return existing
+
+    row = models.Watchlist(**item.model_dump())
+    db_session.add(row)
+    await db_session.commit()
+    await db_session.refresh(row)
+    return row
 
 @app.get("/watchlist", response_model=list[schemas.WatchlistOut])
 async def get_watchlist(db_session: AsyncSession = Depends(db.get_db)):
     result = await db_session.execute(select(models.Watchlist))
+    return result.scalars().all()
+
+@app.get("/sorted-watchlist/{sort_by}", response_model=list[schemas.WatchlistOut])
+async def get_watchlist_sorted(
+    sort_by: Literal["symbol", "name", "market_cap", "pe_ratio", "price", "created_at"],
+    order: Literal["asc", "desc"] = "asc",
+    db_session: AsyncSession = Depends(db.get_db)):
+    # Build a safe column attribute from the model
+    col = getattr(models.Watchlist, sort_by, None)
+    if col is None:
+        raise HTTPException(status_code=400, detail="Invalid sort_by field")
+
+    stmt = select(models.Watchlist).order_by(col.desc() if order == "desc" else col.asc())
+    result = await db_session.execute(stmt)
     return result.scalars().all()
