@@ -14,6 +14,7 @@ app = FastAPI()
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://35.182.180.174",
     # add prod/staging origins when you deploy your frontend
     # "https://equitytracker.yourdomain.com",
     # "https://your-vercel-app.vercel.app",
