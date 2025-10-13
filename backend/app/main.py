@@ -1,13 +1,33 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
-from app import models, schemas, db
 from sqlalchemy.future import select
-from app.stock_fetcher import fetch_stock_data
-from sqlalchemy.orm import Session
 from typing import Literal
-from operator import attrgetter
 
+from app import models, schemas, db
+from app.stock_fetcher import fetch_stock_data
+
+# Initialize the app
 app = FastAPI()
+
+# Configure CORS
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    # add prod/staging origins when you deploy your frontend
+    # "https://equitytracker.yourdomain.com",
+    # "https://your-vercel-app.vercel.app",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Routes
 
 @app.get("/")
 def root():
