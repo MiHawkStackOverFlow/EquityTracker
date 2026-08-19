@@ -9,3 +9,4 @@ asyncpg
 alembic
 psycopg2-binary
 pydantic
+greenlet
