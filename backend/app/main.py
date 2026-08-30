@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import Literal
+import random
 
 from app import models, schemas, db
 from app.stock_fetcher import fetch_stock_data
@@ -75,3 +76,23 @@ async def get_watchlist_sorted(
     stmt = select(models.Watchlist).order_by(col.desc() if order == "desc" else col.asc())
     result = await db_session.execute(stmt)
     return result.scalars().all()
+
+
+@app.get("/predict/{ticker}")
+async def predict_stock(ticker: str):
+    """
+    Dummy ML prediction endpoint (Ticket #18).
+    To be replaced with a real Scikit-learn model (Phase 1).
+    """
+    # Simulate a binary classification model (Up/Down)
+    prediction = random.choice(["Up", "Down"])
+    
+    # Simulate a probability/confidence score from the model
+    confidence = round(random.uniform(0.51, 0.99), 2)
+    
+    return {
+        "ticker": ticker.upper(),
+        "prediction": prediction,
+        "confidence": confidence,
+        "model_version": "dummy-v1"
+    }
