@@ -31,7 +31,7 @@ Inspired by enterprise quantitative workflows, this platform replaces manual spr
 
 The system decouples high-throughput deterministic web traffic from heavy probabilistic ML compute and asynchronous LLM agent orchestration.
 
-![EquityTracker AI Architecture](./docs/architecture/equitytracker_ai_architecture.jpg)
+![EquityTracker AI Architecture](./docs/architecture/equitytracker_system_architecture.jpg)
 
 > **Architectural Boundary:** High-throughput client requests terminate at the asynchronous FastAPI gateway; isolated Amazon SageMaker endpoints execute quantitative ML models; LangGraph agent loops trigger strictly upon verified statistical breaches to control compute costs and enforce deterministic execution boundaries.
 
