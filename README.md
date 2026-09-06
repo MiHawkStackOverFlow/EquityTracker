@@ -1,5 +1,7 @@
 # EquityTracker: Enterprise Quantitative AI & Multi-Agent Platform
 
+![EquityTracker AI Architecture](./docs/architecture/equitytracker_hero_banner.jpg)
+
 EquityTracker is an enterprise-grade quantitative AI platform designed to detect market valuation anomalies, classify market regimes, and autonomously triage portfolio variances using multi-agent workflows.
 
 Inspired by enterprise quantitative workflows, this platform replaces manual spreadsheet reviews with self-correcting, observable AI workflows grounded in probabilistic machine learning and statistical tripwires.
@@ -61,7 +63,8 @@ To maintain enterprise engineering transparency, features are explicitly split b
 
 The ML core processes market data across two parallel tracks to supply the decision engine with both localized anomaly scores and macroeconomic regime context:
 
-![Quantitative Finance ML Pipeline](./docs/architecture/quantitative_finance_ml_pipeline.jpg)
+<img width="2048" height="1152" alt="image" src="https://github.com/user-attachments/assets/0ca71e67-0f8a-4cb6-84ba-545c6185e5a2" />
+
 
 ### Evaluation Rigor & Target Benchmarks
 To prevent lookahead bias and data leakage, all time-series models use expanding-window cross-validation (`TimeSeriesSplit`) with a 5-day embargo period[cite: 3].
