@@ -79,7 +79,7 @@ To prevent lookahead bias and data leakage, all time-series models use expanding
 
 When classical ML models flag a fundamental disconnect or volume anomaly, EquityTracker escalates execution to a deterministic LangGraph multi-agent loop:
 
-![Autonomous Variance Root-Cause Analysis](./docs/architecture/autonomous_variance_root_cause_analysis.jpg)
+![Autonomous Variance Root-Cause Analysis](./docs/architecture/autonomous_variance_root_cause_analysis_flowchart.jpg)
 
 1. **Deterministic Trigger:** Isolation Forest and rolling $z$-score tripwires detect an anomaly exceeding $3\sigma$ variance, completely bypassing LLM spend during standard market conditions.
 2. **Parallel Evidence Collection:**
