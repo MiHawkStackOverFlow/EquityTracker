@@ -10,3 +10,5 @@ alembic
 psycopg2-binary
 pydantic
 greenlet
+scipy
+httpx
