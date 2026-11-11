@@ -7,6 +7,7 @@ import random
 
 from app import models, schemas, db
 from app.stock_fetcher import fetch_stock_data
+from app.analytics.dependence import analyze_portfolio_dependence
 
 # Initialize the app
 app = FastAPI()
@@ -16,7 +17,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://35.182.180.174",
-    # add prod/staging origins when you deploy your frontend
+    # add prod/staging origins when deploy frontend
     # "https://equitytracker.yourdomain.com",
     # "https://your-vercel-app.vercel.app",
 ]
@@ -96,3 +97,13 @@ async def predict_stock(ticker: str):
         "confidence": confidence,
         "model_version": "dummy-v1"
     }
+
+@app.post("/api/v1/analytics/dependence")
+def get_portfolio_dependence(payload: schemas.DependenceRequest):
+    try:
+        return analyze_portfolio_dependence(
+            price_series=payload.price_series,
+            divergence_threshold=payload.divergence_threshold,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
