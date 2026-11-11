@@ -26,3 +26,8 @@ docker-compose.override.yml
 .idea/
 .DS_Store
 .vscode/
+
+.venv/
+venv/
+__pycache__/
+*.DS_Store
