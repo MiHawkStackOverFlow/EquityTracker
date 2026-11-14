@@ -12,3 +12,5 @@ pydantic
 greenlet
 scipy
 httpx
+scikit-learn
+joblib
