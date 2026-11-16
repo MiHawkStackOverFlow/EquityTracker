@@ -5,9 +5,20 @@ from sqlalchemy.future import select
 from typing import Literal
 import random
 
+import sys
+import pandas as pd
+from pathlib import Path
 from app import models, schemas, db
 from app.stock_fetcher import fetch_stock_data
 from app.analytics.dependence import analyze_portfolio_dependence
+
+# Import ML modules from ml-models/anomaly
+ANOMALY_DIR = Path(__file__).resolve().parent.parent.parent / "ml-models" / "anomaly"
+if str(ANOMALY_DIR) not in sys.path:
+    sys.path.append(str(ANOMALY_DIR))
+
+from z_score_detector import compute_rolling_z_scores
+from isolation_forest_detector import train_and_evaluate_isolation_forest
 
 # Initialize the app
 app = FastAPI()
@@ -107,3 +118,43 @@ def get_portfolio_dependence(payload: schemas.DependenceRequest):
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+
+@app.post("/api/v1/anomalies/evaluate/{symbol}")
+def evaluate_ticker_anomalies(symbol: str, payload: schemas.AnomalyEvaluateRequest):
+    n_bars = len(payload.close)
+    
+    if not (len(payload.high) == len(payload.low) == len(payload.volume) == n_bars):
+        raise HTTPException(status_code=400, detail="high, low, close, and volume arrays must have equal length.")
+    if n_bars < 50:
+        raise HTTPException(status_code=400, detail="At least 50 daily observations are required for purged CV.")
+
+    try:
+        df = pd.DataFrame({ "high": payload.high, "low": payload.low, "close": payload.close, "volume": payload.volume })
+
+        z_df = compute_rolling_z_scores(df, window=payload.window, z_threshold=payload.z_threshold)
+
+        iforest_res = train_and_evaluate_isolation_forest(df, window=payload.window, contamination=payload.contamination)
+        scored_df = iforest_res["scored_df"]
+
+        latest_z = z_df.iloc[-1]
+        latest_iforest = scored_df.iloc[-1]
+
+        return {
+            "symbol": symbol.upper(),
+            "observations_evaluated": iforest_res["n_observations"],
+            "cv_mean_anomaly_rate": iforest_res["cv_mean_anomaly_rate"],
+            "z_score_anomalies_total": int(z_df["is_z_anomaly"].sum()),
+            "iforest_anomalies_total": iforest_res["total_anomalies_flagged"],
+            "latest_day": {
+                "max_abs_z": round(float(latest_z["max_abs_z"]), 4),
+                "is_z_anomaly": bool(latest_z["is_z_anomaly"]),
+                "is_tail_jump": bool(latest_z["is_tail_jump"]),
+                "is_iforest_anomaly": bool(latest_iforest["is_iforest_anomaly"]),
+                "anomaly_score": round(float(latest_iforest["anomaly_score"]), 4),
+                "trigger_langgraph_triage": bool(
+                    latest_z["is_z_anomaly"] or latest_iforest["is_iforest_anomaly"]
+                )
+            }
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))    
